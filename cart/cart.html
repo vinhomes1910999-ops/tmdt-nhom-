@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Giỏ hàng</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+
+
+<body class="bg-gray-100">
+
+
+<div class="max-w-6xl mx-auto px-4 py-10">
+
+
+    <div class="flex justify-between items-center mb-8">
+
+        <h1 class="text-3xl font-bold text-gray-800">
+            Giỏ hàng
+        </h1>
+
+        <a
+            href="/"
+            class="text-blue-600 hover:underline"
+        >
+            ← Tiếp tục mua sắm
+        </a>
+
+    </div>
+
+
+    {% if cart_items %}
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+
+        <div class="lg:col-span-2">
+
+            {% for item in cart_items %}
+
+            <div class="bg-white rounded-xl shadow-sm p-5 mb-4">
+
+                <div class="flex items-center justify-between gap-4">
+
+
+                    <div class="flex items-center gap-4">
+
+
+                        {% if item.product.image %}
+
+                        <img
+                            src="{{ item.product.image.url }}"
+                            class="w-24 h-24 rounded-lg object-cover"
+                        >
+
+                        {% endif %}
+
+
+                        <div>
+
+                            <h2 class="font-bold text-lg">
+                                {{ item.product.name }}
+                            </h2>
+
+                            <p class="text-blue-600 font-semibold mt-2">
+                                {{ item.product.current_price }} đ
+                            </p>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="flex items-center gap-3">
+
+
+                        <div class="flex items-center border rounded-lg">
+
+                            <a
+                                href="{% url 'cart:decrease' item.id %}"
+                                class="px-3 py-2 bg-gray-100 hover:bg-gray-200"
+                            >
+                                −
+                            </a>
+
+                            <span class="px-4">
+                                {{ item.quantity }}
+                            </span>
+
+                            <a
+                                href="{% url 'cart:increase' item.id %}"
+                                class="px-3 py-2 bg-gray-100 hover:bg-gray-200"
+                            >
+                                +
+                            </a>
+
+                        </div>
+
+
+                        <a
+                            href="{% url 'cart:remove' item.id %}"
+                            class="text-red-500 hover:text-red-700"
+                        >
+                            Xóa
+                        </a>
+
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+
+        <div class="bg-white rounded-xl shadow-sm p-6 h-fit">
+
+            <h2 class="text-xl font-bold border-b pb-4 mb-5">
+                Tóm tắt đơn hàng
+            </h2>
+
+
+            <div class="flex justify-between mb-4">
+
+                <span class="text-gray-500">
+                    Tổng tiền hàng
+                </span>
+
+                <span class="font-semibold">
+                    {{ total_price }} đ
+                </span>
+
+            </div>
+
+
+            <div class="flex justify-between border-t pt-4">
+
+                <span class="font-bold">
+                    Tổng thanh toán
+                </span>
+
+                <span class="font-bold text-red-600">
+                    {{ total_price }} đ
+                </span>
+
+            </div>
+
+
+            <a
+                href="{% url 'orders:checkout' %}"
+                class="block text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg mt-6"
+            >
+                Tiến hành thanh toán
+            </a>
+
+        </div>
+
+
+    </div>
+
+
+    {% else %}
+
+
+    <div class="bg-white rounded-xl shadow-sm p-12 text-center">
+
+        <div class="text-5xl mb-4">
+            🛒
+        </div>
+
+        <h2 class="text-xl font-bold">
+            Giỏ hàng đang trống
+        </h2>
+
+        <p class="text-gray-500 mt-2 mb-6">
+            Hãy thêm sản phẩm vào giỏ hàng.
+        </p>
+
+        <a
+            href="/"
+            class="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg"
+        >
+            Tiếp tục mua sắm
+        </a>
+
+    </div>
+
+
+    {% endif %}
+
+
+</div>
+
+
+</body>
+</html>

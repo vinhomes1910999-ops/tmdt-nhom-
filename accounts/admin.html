@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100">
+
+<div class="max-w-7xl mx-auto p-6">
+
+    <!-- HEADER -->
+    <div class="flex justify-between items-center mb-8">
+
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800">
+                Admin Dashboard
+            </h1>
+
+            <p class="text-gray-500 mt-1">
+                Quản lý cửa hàng
+            </p>
+        </div>
+
+        <a href="/"
+           class="bg-gray-800 text-white px-5 py-2 rounded-lg hover:bg-gray-700">
+            Trang chủ
+        </a>
+
+    </div>
+
+
+    <!-- THỐNG KÊ -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+
+        <!-- DOANH THU -->
+        <div class="bg-white p-6 rounded-xl shadow-sm">
+
+            <p class="text-gray-500">
+                Tổng doanh thu
+            </p>
+
+            <h2 class="text-2xl font-bold text-green-600 mt-2">
+                {{ total_revenue }} đ
+            </h2>
+
+        </div>
+
+
+        <!-- ĐƠN HÀNG -->
+        <div class="bg-white p-6 rounded-xl shadow-sm">
+
+            <p class="text-gray-500">
+                Tổng đơn hàng
+            </p>
+
+            <h2 class="text-2xl font-bold text-blue-600 mt-2">
+                {{ total_orders }}
+            </h2>
+
+        </div>
+
+
+        <!-- KHÁCH HÀNG -->
+        <div class="bg-white p-6 rounded-xl shadow-sm">
+
+            <p class="text-gray-500">
+                Tổng khách hàng
+            </p>
+
+            <h2 class="text-2xl font-bold text-purple-600 mt-2">
+                {{ total_users }}
+            </h2>
+
+        </div>
+ 
+    </div>
+
+
+    <!-- ĐƠN HÀNG -->
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+
+        <div class="p-6 border-b">
+
+            <h2 class="text-xl font-bold text-gray-800">
+                Đơn hàng gần đây
+            </h2>
+
+        </div>
+
+
+        <div class="overflow-x-auto">
+
+            <table class="w-full">
+
+                <thead class="bg-gray-50">
+
+                    <tr>
+
+                        <th class="text-left p-4">
+                            Mã đơn
+                        </th>
+
+                        <th class="text-left p-4">
+                            Khách hàng
+                        </th>
+
+                        <th class="text-left p-4">
+                            Ngày đặt
+                        </th>
+
+                        <th class="text-left p-4">
+                            Tổng tiền
+                        </th>
+
+                        <th class="text-left p-4">
+                            Trạng thái
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for order in recent_orders %}
+
+                    <tr class="border-t hover:bg-gray-50">
+
+                        <td class="p-4 font-semibold text-blue-600">
+                            #{{ order.id }}
+                        </td>
+
+                        <td class="p-4">
+                            {{ order.user.username }}
+                        </td>
+
+                        <td class="p-4">
+                            {{ order.created_at|date:"d/m/Y H:i" }}
+                        </td>
+
+                        <td class="p-4 font-semibold">
+                            {{ order.total_amount }} đ
+                        </td>
+
+                        <td class="p-4">
+
+                            {% if order.status == "Paid" %}
+
+                            <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
+                                Đã thanh toán
+                            </span>
+
+                            {% else %}
+
+                            <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm">
+                                Chờ xử lý
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td colspan="5"
+                            class="p-8 text-center text-gray-500">
+
+                            Chưa có đơn hàng nào.
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- ĐĂNG XUẤT -->
+    <div class="mt-6 text-right">
+
+        <a href="{% url 'accounts:logout' %}"
+           class="text-red-500 hover:text-red-700">
+
+            Đăng xuất
+
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

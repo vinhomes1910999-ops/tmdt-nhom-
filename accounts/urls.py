@@ -1,7 +1,11 @@
 from django.urls import path
+from . import views
 
-app_name = 'accounts'
+app_name = "accounts"
 
 urlpatterns = [
-    # TV sẽ thêm các path vào đây (đăng nhập/đăng ký/đăng xuất)
-]
+    path("login/", views.login_view, name="login"),
+    path("register/", views.register_view, name="register"),
+    path("logout/", views.logout_view, name="logout"),
+    path("admin/", views.admin_dashboard, name="admin"),
+ ]
