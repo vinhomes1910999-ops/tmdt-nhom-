@@ -64,3 +64,23 @@ def contact_message(request):
             "success": False,
             "error": str(e)
         }, status=400)
+def policy(request):
+    return JsonResponse({
+        "title": "Privacy Policy",
+        "content": (
+            "We respect customer privacy. "
+            "Customer information is only used "
+            "to provide and improve our services."
+        )
+    })
+
+
+def store_location(request):
+    return JsonResponse({
+        "name": "Fashion Store",
+        "address": "Ho Chi Minh City, Vietnam",
+        "google_maps": (
+            "https://www.google.com/maps/search/"
+            "?api=1&query=Ho+Chi+Minh+City"
+        )
+    })
