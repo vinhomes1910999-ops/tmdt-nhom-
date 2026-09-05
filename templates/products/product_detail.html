@@ -1,0 +1,543 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load product_tags %}
+
+{% block title %}{{ product.name }} - Myshop{% endblock %}
+{% block meta_description %}{{ product.description|truncatewords:30 }}{% endblock %}
+
+{% block content %}
+
+<!-- Breadcrumbs -->
+<div class="bg-white border-b border-gray-100 py-3">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav class="flex items-center gap-2 text-xs text-gray-500 overflow-x-auto whitespace-nowrap">
+      <a href="{% url 'products:home' %}" class="hover:text-black transition-colors">Trang chủ</a>
+      <span>/</span>
+      <a href="{% url 'products:product_list' %}" class="hover:text-black transition-colors">Sản phẩm</a>
+      {% if product.category %}
+        <span>/</span>
+        <a href="{% url 'products:category_products' product.category.slug %}" class="hover:text-black transition-colors">{{ product.category.name }}</a>
+      {% endif %}
+      <span>/</span>
+      <span class="font-bold text-gray-900 truncate max-w-[200px] sm:max-w-none">{{ product.name }}</span>
+    </nav>
+  </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+  
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+    
+    <!-- LEFT COLUMN: IMAGE GALLERY -->
+    <div class="lg:col-span-7 space-y-4">
+      
+      <!-- Main Featured Image -->
+      <div class="relative aspect-[3/4] bg-zinc-100 rounded-2xl overflow-hidden border border-gray-200/80 shadow-xs group">
+        
+        <!-- Badges -->
+        <div class="absolute top-4 left-4 flex flex-col gap-1.5 z-10">
+          {% if product.discount_percent > 0 %}
+            <span class="bg-rose-600 text-white text-xs font-black px-2.5 py-1 rounded-md shadow-md">
+              -{{ product.discount_percent }}%
+            </span>
+          {% endif %}
+          <span class="bg-black/80 backdrop-blur-xs text-white text-[11px] font-bold px-2.5 py-0.5 rounded-md shadow-xs">
+            Myshop Studio
+          </span>
+        </div>
+
+        {% if images %}
+          <img 
+            id="mainProductImage"
+            src="{{ images.0.image.url }}" 
+            alt="{{ product.name }}" 
+            class="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105 cursor-zoom-in"
+          >
+        {% else %}
+          <img 
+            id="mainProductImage"
+            src="https://images.unsplash.com/photo-1625910513413-5629c1585293?w=1000&auto=format&fit=crop&q=80" 
+            alt="{{ product.name }}" 
+            class="w-full h-full object-cover object-center"
+          >
+        {% endif %}
+      </div>
+
+      <!-- Thumbnail Strip -->
+      {% if images|length > 1 %}
+        <div class="flex items-center gap-3 overflow-x-auto pb-2">
+          {% for img in images %}
+            <button 
+              type="button" 
+              onclick="changeMainImage('{{ img.image.url }}', this)" 
+              class="thumbnail-btn relative w-20 h-24 rounded-xl overflow-hidden border-2 {% if forloop.first %}border-black ring-2 ring-black/10{% else %}border-transparent hover:border-gray-300{% endif %} transition-all shrink-0 bg-gray-100"
+            >
+              <img src="{{ img.image.url }}" alt="{{ product.name }} thumbnail {{ forloop.counter }}" class="w-full h-full object-cover object-center">
+            </button>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+    </div>
+
+    <!-- RIGHT COLUMN: PRODUCT INFO & PURCHASE -->
+    <div class="lg:col-span-5 flex flex-col justify-between space-y-6">
+      
+      <div class="space-y-4">
+        
+        <!-- Category & SKU -->
+        <div class="flex items-center justify-between text-xs text-gray-500 uppercase tracking-wider font-semibold">
+          <span class="text-rose-600">{{ product.category.name|default:'Thời trang nam' }}</span>
+          <span>Mã SP: #{{ product.id|stringformat:"06d" }}</span>
+        </div>
+
+        <!-- Product Name -->
+        <h1 class="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight leading-snug">
+          {{ product.name }}
+        </h1>
+
+        <!-- Rating & Sold info -->
+        <div class="flex items-center gap-3 text-xs pb-3 border-b border-gray-100">
+          <div class="flex items-center gap-1">
+            <span class="text-amber-400 text-sm">★★★★★</span>
+            <span class="font-bold text-gray-900 ml-1">{{ avg_rating|default:'5.0' }}</span>
+          </div>
+          <span class="text-gray-300">|</span>
+          <a href="#reviewsSection" class="text-gray-600 hover:text-black underline">
+            {{ total_reviews }} đánh giá
+          </a>
+          <span class="text-gray-300">|</span>
+          <span class="text-gray-500">Đã bán <strong>{{ product.sold_count|default:'0' }}</strong></span>
+        </div>
+
+        <!-- Price Block -->
+        <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100 space-y-1.5">
+          <div class="flex items-baseline gap-3">
+            <span class="text-3xl font-black text-rose-600">
+              {{ product.current_price|vnd }}
+            </span>
+            {% if product.sale_price and product.price > product.sale_price %}
+              <span class="text-sm text-gray-400 line-through font-normal">
+                {{ product.price|vnd }}
+              </span>
+              <span class="text-xs font-bold text-rose-600 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded">
+                Tiết kiệm {{ product.price|sub:product.sale_price|vnd }}
+              </span>
+            {% endif %}
+          </div>
+          <p class="text-[11px] text-gray-500">
+            Giá đã bao gồm thuế VAT & Bảo hành chính hãng trọn đời đường may.
+          </p>
+        </div>
+
+        <!-- Promo Banner -->
+        <div class="bg-amber-50 border border-amber-200/80 rounded-xl p-3 flex items-center gap-3 text-xs text-amber-900">
+          <span class="text-lg shrink-0">🎁</span>
+          <p class="leading-relaxed">
+            <strong>Ưu đãi hôm nay:</strong> Miễn phí vận chuyển cho đơn từ 399.000₫ & Tặng thêm voucher 10% khi đăng ký thành viên.
+          </p>
+        </div>
+
+        <!-- Add to Cart Form -->
+        <form action="{% url 'cart:add' product.id %}" method="POST" class="space-y-6 pt-2">
+          {% csrf_token %}
+
+          <!-- Color Selector -->
+          {% if colors_list %}
+            <div class="space-y-2">
+              <div class="flex items-center justify-between text-xs font-bold text-gray-800">
+                <span>MÀU SẮC: <span id="currentColorLabel" class="text-rose-600 font-extrabold">{{ colors_list.0 }}</span></span>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                {% for color in colors_list %}
+                  <label class="cursor-pointer">
+                    <input 
+                      type="radio" 
+                      name="color" 
+                      value="{{ color }}" 
+                      {% if forloop.first %}checked{% endif %}
+                      onchange="document.getElementById('currentColorLabel').innerText = this.value"
+                      class="sr-only peer"
+                    >
+                    <span class="inline-block px-3.5 py-2 text-xs font-semibold rounded-xl border border-gray-200 peer-checked:bg-black peer-checked:text-white peer-checked:border-black hover:border-gray-400 transition-colors">
+                      {{ color }}
+                    </span>
+                  </label>
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+
+          <!-- Size Selector -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold text-gray-800">KÍCH THƯỚC (SIZE):</span>
+              <button type="button" onclick="openSizeGuideModal()" class="text-rose-600 font-bold hover:underline flex items-center gap-1">
+                <span>📐 Hướng dẫn chọn size</span>
+              </button>
+            </div>
+            
+            <div class="flex flex-wrap gap-2">
+              {% if sizes_list %}
+                {% for size in sizes_list %}
+                  <label class="cursor-pointer">
+                    <input type="radio" name="size" value="{{ size }}" {% if forloop.first %}checked{% endif %} class="sr-only peer">
+                    <span class="inline-block px-4 py-2.5 text-xs font-extrabold rounded-xl border border-gray-200 peer-checked:bg-black peer-checked:text-white peer-checked:border-black hover:border-gray-400 transition-colors min-w-[48px] text-center shadow-2xs">
+                      {{ size }}
+                    </span>
+                  </label>
+                {% endfor %}
+              {% else %}
+                <span class="text-xs text-gray-500">Freesize</span>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Quantity Selector & Stock -->
+          <div class="space-y-2">
+            <span class="text-xs font-bold text-gray-800">SỐ LƯỢNG:</span>
+            <div class="flex items-center gap-4">
+              <div class="flex items-center border border-gray-300 rounded-xl bg-white overflow-hidden shadow-xs">
+                <button type="button" onclick="decreaseQty()" class="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-100 font-bold text-base transition-colors">-</button>
+                <input type="number" id="productQuantity" name="quantity" value="1" min="1" max="{{ product.stock|default:99 }}" class="w-12 h-10 text-center text-sm font-bold border-x border-gray-200 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+                <button type="button" onclick="increaseQty()" class="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-100 font-bold text-base transition-colors">+</button>
+              </div>
+
+              <span class="text-xs text-gray-500">
+                {% if product.stock > 0 %}
+                  Còn <strong class="text-gray-900">{{ product.stock }}</strong> sản phẩm có sẵn
+                {% else %}
+                  <span class="text-rose-600 font-bold">Tạm hết hàng</span>
+                {% endif %}
+              </span>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+            <button 
+              type="submit" 
+              class="w-full bg-white hover:bg-gray-50 text-black border-2 border-black font-extrabold py-3.5 px-6 rounded-xl text-sm transition-all shadow-xs flex items-center justify-center gap-2 active:scale-95"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+              </svg>
+              <span>THÊM VÀO GIỎ</span>
+            </button>
+
+            <button 
+              type="submit" 
+              class="w-full bg-black hover:bg-zinc-800 text-white font-extrabold py-3.5 px-6 rounded-xl text-sm transition-all shadow-md flex items-center justify-center gap-2 active:scale-95"
+            >
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"/>
+              </svg>
+              <span>MUA NGAY</span>
+            </button>
+          </div>
+
+        </form>
+
+        <!-- YaMe Trust Checkmarks -->
+        <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-2 text-xs text-gray-700">
+          <div class="flex items-center gap-2">
+            <span class="text-emerald-600 font-bold">✓</span>
+            <span><strong>Đổi trả trong 365 ngày</strong> tận nơi nếu không ưng ý hoặc sai kích cỡ.</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-emerald-600 font-bold">✓</span>
+            <span><strong>Giao hàng hỏa tốc</strong> toàn quốc từ 2 đến 3 ngày làm việc.</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-emerald-600 font-bold">✓</span>
+            <span><strong>Được kiểm tra hàng</strong> (Đồng kiểm) trước khi nhận và thanh toán.</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ACCORDION: DETAILS & CARE -->
+      <div class="border-t border-gray-200 pt-6 space-y-3">
+        
+        <!-- Accordion 1: Mô tả -->
+        <div class="border border-gray-200 rounded-xl overflow-hidden">
+          <button 
+            type="button" 
+            onclick="toggleAccordion('acc-desc', this)" 
+            class="w-full px-4 py-3 bg-white text-left font-bold text-xs text-gray-900 flex items-center justify-between hover:bg-gray-50 transition-colors"
+          >
+            <span>MÔ TẢ CHI TIẾT & PHOM DÁNG</span>
+            <span class="text-gray-400 font-mono text-base">+</span>
+          </button>
+          <div id="acc-desc" class="hidden px-4 pb-4 pt-2 text-xs text-gray-600 leading-relaxed space-y-2 bg-white">
+            <p>{{ product.description|linebreaksbr|default:'Sản phẩm thời trang nam cao cấp của thương hiệu Myshop.' }}</p>
+            {% if product.material %}
+              <p><strong>Chất liệu:</strong> {{ product.material }}</p>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Accordion 2: Hướng dẫn bảo quản -->
+        <div class="border border-gray-200 rounded-xl overflow-hidden">
+          <button 
+            type="button" 
+            onclick="toggleAccordion('acc-care', this)" 
+            class="w-full px-4 py-3 bg-white text-left font-bold text-xs text-gray-900 flex items-center justify-between hover:bg-gray-50 transition-colors"
+          >
+            <span>HƯỚNG DẪN GIẶT ỦI & BẢO QUẢN</span>
+            <span class="text-gray-400 font-mono text-base">+</span>
+          </button>
+          <div id="acc-care" class="hidden px-4 pb-4 pt-2 text-xs text-gray-600 leading-relaxed space-y-1.5 bg-white">
+            <p>&bull; Giặt máy ở chế độ nhẹ nhàng (nhiệt độ nước dưới 40°C).</p>
+            <p>&bull; Không dùng thuốc tẩy chứa clo để bảo vệ độ bền của sợi Spandex.</p>
+            <p>&bull; Nên lộn trái áo khi giặt và phơi để giữ màu ColorLock™ luôn tươi mới.</p>
+            <p>&bull; Ủi ở nhiệt độ thấp hoặc vừa (110°C - 130°C).</p>
+          </div>
+        </div>
+
+        <!-- Accordion 3: Chính sách bảo hành -->
+        <div class="border border-gray-200 rounded-xl overflow-hidden">
+          <button 
+            type="button" 
+            onclick="toggleAccordion('acc-warranty', this)" 
+            class="w-full px-4 py-3 bg-white text-left font-bold text-xs text-gray-900 flex items-center justify-between hover:bg-gray-50 transition-colors"
+          >
+            <span>CHÍNH SÁCH BẢO HÀNH TRỌN ĐỜI</span>
+            <span class="text-gray-400 font-mono text-base">+</span>
+          </button>
+          <div id="acc-warranty" class="hidden px-4 pb-4 pt-2 text-xs text-gray-600 leading-relaxed space-y-1.5 bg-white">
+            <p>&bull; Myshop bảo hành miễn phí trọn đời cho toàn bộ đường may, cúc áo và dây kéo.</p>
+            <p>&bull; Khách hàng chỉ cần mang sản phẩm đến bất kỳ cửa hàng Myshop nào trên toàn quốc.</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- REVIEWS & COMMENTS SECTION -->
+  <section id="reviewsSection" class="mt-16 pt-12 border-t border-gray-200">
+    <div class="max-w-4xl mx-auto space-y-10">
+      
+      <!-- Section Title & Score Card -->
+      <div class="bg-gray-50 rounded-2xl p-6 sm:p-8 border border-gray-200/80 flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div class="text-center sm:text-left space-y-1">
+          <h2 class="text-xl sm:text-2xl font-black text-gray-900">Đánh Giá & Nhận Xét</h2>
+          <p class="text-xs text-gray-500">Ý kiến thực tế từ những khách hàng đã sở hữu sản phẩm này</p>
+        </div>
+
+        <div class="flex items-center gap-4 bg-white px-6 py-4 rounded-xl border border-gray-200 shadow-xs">
+          <div class="text-center">
+            <span class="text-4xl font-black text-gray-900 leading-none">{{ avg_rating|default:'5.0' }}</span>
+            <div class="text-amber-400 text-sm mt-1">★★★★★</div>
+          </div>
+          <div class="border-l border-gray-200 pl-4 text-xs text-gray-500 space-y-0.5">
+            <p>Dựa trên <strong>{{ total_reviews }}</strong> đánh giá</p>
+            <p class="text-emerald-600 font-semibold">100% hài lòng với form dáng</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Review Submission Form -->
+      <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-xs">
+        <h3 class="text-sm font-bold text-gray-900 mb-4 uppercase tracking-wider">Viết đánh giá của bạn</h3>
+        
+        {% if user.is_authenticated %}
+          <form action="{% url 'products:add_review' product.id %}" method="POST" class="space-y-4">
+            {% csrf_token %}
+
+            <div>
+              <label class="block text-xs font-semibold text-gray-700 mb-1.5">Chọn số sao đánh giá:</label>
+              <div class="flex items-center gap-4 text-xs">
+                {% for i in "54321"|make_list %}
+                  <label class="flex items-center gap-1 cursor-pointer">
+                    <input type="radio" name="rating" value="{{ i }}" {% if i == "5" %}checked{% endif %} class="text-amber-500 focus:ring-amber-500">
+                    <span class="font-bold text-amber-500">{{ i }} ★</span>
+                  </label>
+                {% endfor %}
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-gray-700 mb-1.5">Nội dung cảm nhận:</label>
+              <textarea 
+                name="content" 
+                rows="3" 
+                placeholder="Chia sẻ về độ mềm vải, độ đứng phom hay dịch vụ giao hàng..." 
+                class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-800 focus:outline-none focus:border-black focus:bg-white"
+              ></textarea>
+            </div>
+
+            <button type="submit" class="bg-black hover:bg-zinc-800 text-white font-bold text-xs px-6 py-2.5 rounded-xl transition-colors">
+              GỬI ĐÁNH GIÁ
+            </button>
+          </form>
+        {% else %}
+          <div class="p-4 bg-gray-50 rounded-xl text-center space-y-2 text-xs">
+            <p class="text-gray-600">Vui lòng đăng nhập để gửi đánh giá và nhận xét sản phẩm.</p>
+            <a href="{% url 'accounts:login' %}" class="inline-block font-bold text-rose-600 hover:underline">
+              Đăng nhập ngay →
+            </a>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Reviews List -->
+      <div class="space-y-4">
+        <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider">
+          Nhận xét gần đây ({{ total_reviews }})
+        </h3>
+
+        {% for review in reviews %}
+          <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-2xs space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-full bg-zinc-900 text-white font-bold flex items-center justify-center text-[10px]">
+                  {{ review.user.username|slice:":1"|upper }}
+                </div>
+                <span class="font-bold text-gray-900">{{ review.user.username }}</span>
+                <span class="text-[10px] text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 rounded">
+                  ✓ Đã mua hàng
+                </span>
+              </div>
+              <span class="text-gray-400 text-[11px]">{{ review.created_at|date:"d/m/Y" }}</span>
+            </div>
+
+            <div class="text-amber-400 text-xs">
+              {% for filled in review.rating|star_rating %}
+                {% if filled %}★{% else %}<span class="text-gray-200">★</span>{% endif %}
+              {% endfor %}
+            </div>
+
+            <p class="text-xs text-gray-700 leading-relaxed">
+              {{ review.content }}
+            </p>
+          </div>
+        {% empty %}
+          <p class="text-xs text-gray-500 italic text-center py-6">
+            Chưa có đánh giá nào cho sản phẩm này. Hãy là người đầu tiên trải nghiệm và để lại nhận xét!
+          </p>
+        {% endfor %}
+      </div>
+
+      <!-- Comment Discussion Form -->
+      <div class="bg-gray-50 rounded-2xl p-6 border border-gray-200 space-y-4">
+        <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Hỏi đáp & Bình luận</h3>
+        
+        {% if user.is_authenticated %}
+          <form action="{% url 'products:add_comment' product.id %}" method="POST" class="space-y-3">
+            {% csrf_token %}
+            <textarea 
+              name="content" 
+              rows="2" 
+              required
+              placeholder="Đặt câu hỏi về sản phẩm, nhân viên Myshop sẽ phản hồi trong 15 phút..." 
+              class="w-full bg-white border border-gray-200 rounded-xl p-3 text-xs text-gray-800 focus:outline-none focus:border-black"
+            ></textarea>
+            <button type="submit" class="bg-zinc-800 hover:bg-black text-white font-bold text-xs px-5 py-2.5 rounded-xl transition-colors">
+              GỬI BÌNH LUẬN
+            </button>
+          </form>
+        {% endif %}
+
+        <!-- Comments Stream -->
+        <div class="space-y-3 pt-2">
+          {% for comment in comments %}
+            <div class="p-3 bg-white rounded-xl border border-gray-100 text-xs space-y-1">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-gray-900">{{ comment.user.username }}</span>
+                <span class="text-gray-400 text-[10px]">{{ comment.created_at|date:"d/m/Y H:i" }}</span>
+              </div>
+              <p class="text-gray-700 leading-relaxed">{{ comment.content }}</p>
+
+              <!-- Replies if any -->
+              {% for reply in comment.replies.all %}
+                <div class="ml-4 mt-2 p-2 bg-gray-50 rounded-lg border-l-2 border-rose-500 text-[11px] space-y-0.5">
+                  <span class="font-bold text-rose-600">Myshop CSKH:</span>
+                  <p class="text-gray-600">{{ reply.content }}</p>
+                </div>
+              {% endfor %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- RELATED PRODUCTS SECTION -->
+  {% if related_products %}
+    <section class="mt-16 pt-12 border-t border-gray-200">
+      <div class="flex items-center justify-between mb-8">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-rose-600">Gợi Ý Cho Bạn</span>
+          <h2 class="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">Sản Phẩm Cùng Bộ Sưu Tập</h2>
+        </div>
+        <a href="{% url 'products:product_list' %}?category={{ product.category.slug }}" class="text-xs font-bold text-black hover:text-rose-600 transition-colors">
+          Xem thêm →
+        </a>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+        {% for rel in related_products %}
+          {% include 'components/product_card.html' with product=rel %}
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Image gallery switcher
+  function changeMainImage(imgUrl, btnElement) {
+    const mainImg = document.getElementById('mainProductImage');
+    if (mainImg) {
+      mainImg.src = imgUrl;
+    }
+    document.querySelectorAll('.thumbnail-btn').forEach(b => {
+      b.classList.remove('border-black', 'ring-2', 'ring-black/10');
+      b.classList.add('border-transparent');
+    });
+    if (btnElement) {
+      btnElement.classList.add('border-black', 'ring-2', 'ring-black/10');
+      btnElement.classList.remove('border-transparent');
+    }
+  }
+
+  // Quantity controls
+  function increaseQty() {
+    const input = document.getElementById('productQuantity');
+    if (input) {
+      const max = parseInt(input.getAttribute('max') || '99');
+      let val = parseInt(input.value || '1');
+      if (val < max) input.value = val + 1;
+    }
+  }
+
+  function decreaseQty() {
+    const input = document.getElementById('productQuantity');
+    if (input) {
+      let val = parseInt(input.value || '1');
+      if (val > 1) input.value = val - 1;
+    }
+  }
+
+  // Accordion toggle
+  function toggleAccordion(id, btn) {
+    const content = document.getElementById(id);
+    if (!content) return;
+    const isHidden = content.classList.contains('hidden');
+    content.classList.toggle('hidden');
+    const icon = btn.querySelector('span:last-child');
+    if (icon) {
+      icon.innerText = isHidden ? '−' : '+';
+    }
+  }
+</script>
+{% endblock %}

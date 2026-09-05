@@ -1,0 +1,400 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load product_tags %}
+
+{% block title %}
+  {% if current_category %}{{ current_category.name }} - Myshop{% elif query %}Tìm kiếm: "{{ query }}" - Myshop{% else %}Tất cả sản phẩm thời trang nam - Myshop{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<!-- Breadcrumbs -->
+<div class="bg-white border-b border-gray-100 py-3">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav class="flex items-center gap-2 text-xs text-gray-500">
+      <a href="{% url 'products:home' %}" class="hover:text-black transition-colors">Trang chủ</a>
+      <span>/</span>
+      <a href="{% url 'products:product_list' %}" class="hover:text-black transition-colors">Sản phẩm</a>
+      {% if current_category %}
+        <span>/</span>
+        <span class="font-bold text-gray-900">{{ current_category.name }}</span>
+      {% elif query %}
+        <span>/</span>
+        <span class="font-bold text-gray-900">Tìm kiếm: "{{ query }}"</span>
+      {% endif %}
+    </nav>
+  </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  
+  <!-- Category Title Header -->
+  <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 mb-6 pb-4 border-b border-gray-200">
+    <div>
+      <h1 class="text-2xl sm:text-3xl font-black text-gray-900 uppercase tracking-tight">
+        {% if current_category %}
+          {{ current_category.name }}
+        {% elif query %}
+          Kết quả tìm kiếm cho "{{ query }}"
+        {% else %}
+          Tất Cả Sản Phẩm Thời Trang Nam
+        {% endif %}
+      </h1>
+      <p class="text-xs text-gray-500 mt-1">
+        Hiển thị <strong>{{ total_count }}</strong> sản phẩm chuẩn form người Việt
+      </p>
+    </div>
+
+    <!-- Mobile Filter Open Button -->
+    <div class="flex items-center gap-2 sm:hidden pt-2">
+      <button 
+        type="button" 
+        onclick="openFilterDrawer()" 
+        class="flex-1 bg-white border border-gray-300 py-2.5 px-4 rounded-xl text-xs font-bold text-gray-800 flex items-center justify-center gap-2 shadow-xs"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+        </svg>
+        <span>BỘ LỌC TÌM KIẾM</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Active Filter Badges (if applied) -->
+  {% if price_range or selected_size or selected_color or query or current_category %}
+    <div class="flex items-center gap-2 flex-wrap mb-6 text-xs">
+      <span class="text-gray-400 font-semibold">Đang lọc theo:</span>
+      
+      {% if current_category %}
+        <a href="{% url 'products:product_list' %}" class="inline-flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded-full font-medium transition-colors">
+          <span>Danh mục: {{ current_category.name }}</span>
+          <span class="text-gray-400 hover:text-black">×</span>
+        </a>
+      {% endif %}
+
+      {% if price_range %}
+        <a href="?{% if current_category %}category={{ current_category.slug }}&{% endif %}{% if selected_size %}size={{ selected_size }}&{% endif %}{% if selected_color %}color={{ selected_color }}&{% endif %}sort_by={{ sort_by }}" class="inline-flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded-full font-medium transition-colors">
+          <span>
+            {% if price_range == 'under_200' %}Dưới 200.000₫{% elif price_range == '200_350' %}200.000₫ - 350.000₫{% elif price_range == '350_500' %}350.000₫ - 500.000₫{% elif price_range == 'over_500' %}Trên 500.000₫{% endif %}
+          </span>
+          <span class="text-gray-400 hover:text-black">×</span>
+        </a>
+      {% endif %}
+
+      {% if selected_size %}
+        <a href="?{% if current_category %}category={{ current_category.slug }}&{% endif %}{% if price_range %}price_range={{ price_range }}&{% endif %}{% if selected_color %}color={{ selected_color }}&{% endif %}sort_by={{ sort_by }}" class="inline-flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded-full font-medium transition-colors">
+          <span>Size: {{ selected_size }}</span>
+          <span class="text-gray-400 hover:text-black">×</span>
+        </a>
+      {% endif %}
+
+      {% if selected_color %}
+        <a href="?{% if current_category %}category={{ current_category.slug }}&{% endif %}{% if price_range %}price_range={{ price_range }}&{% endif %}{% if selected_size %}size={{ selected_size }}&{% endif %}sort_by={{ sort_by }}" class="inline-flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded-full font-medium transition-colors">
+          <span>Màu: {{ selected_color }}</span>
+          <span class="text-gray-400 hover:text-black">×</span>
+        </a>
+      {% endif %}
+
+      <a href="{% url 'products:product_list' %}" class="text-rose-600 font-bold hover:underline ml-2">
+        Xóa tất cả
+      </a>
+    </div>
+  {% endif %}
+
+  <!-- Layout: Sidebar + Product Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+    
+    <!-- DESKTOP FILTER SIDEBAR -->
+    <aside class="hidden lg:block space-y-6">
+      
+      <form id="filterForm" action="{% url 'products:product_list' %}" method="GET" class="space-y-6">
+        
+        <!-- Preserve existing query / sort -->
+        {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
+        <input type="hidden" name="sort_by" value="{{ sort_by }}">
+
+        <!-- Filter: Categories -->
+        <div class="bg-white p-5 rounded-2xl border border-gray-200/80 shadow-xs">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-gray-900 mb-3 flex items-center justify-between">
+            <span>Danh mục sản phẩm</span>
+          </h3>
+          <ul class="space-y-1.5 text-xs font-medium">
+            <li>
+              <a 
+                href="{% url 'products:product_list' %}" 
+                class="block px-2.5 py-1.5 rounded-lg transition-colors {% if not current_category %}bg-zinc-900 text-white font-bold{% else %}text-gray-600 hover:bg-gray-50 hover:text-black{% endif %}"
+              >
+                Tất cả sản phẩm
+              </a>
+            </li>
+            {% for cat in categories %}
+              <li>
+                <a 
+                  href="{% url 'products:category_products' cat.slug %}" 
+                  class="block px-2.5 py-1.5 rounded-lg transition-colors {% if current_category and current_category.slug == cat.slug %}bg-zinc-900 text-white font-bold{% else %}text-gray-600 hover:bg-gray-50 hover:text-black{% endif %}"
+                >
+                  {{ cat.name }}
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <!-- Filter: Price Range -->
+        <div class="bg-white p-5 rounded-2xl border border-gray-200/80 shadow-xs">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-gray-900 mb-3">
+            Khoảng giá
+          </h3>
+          <div class="space-y-2 text-xs">
+            <label class="flex items-center gap-2 text-gray-700 cursor-pointer">
+              <input type="radio" name="price_range" value="" {% if not price_range %}checked{% endif %} class="text-black focus:ring-black">
+              <span>Tất cả mức giá</span>
+            </label>
+            <label class="flex items-center gap-2 text-gray-700 cursor-pointer">
+              <input type="radio" name="price_range" value="under_200" {% if price_range == 'under_200' %}checked{% endif %} class="text-black focus:ring-black">
+              <span>Dưới 200.000₫</span>
+            </label>
+            <label class="flex items-center gap-2 text-gray-700 cursor-pointer">
+              <input type="radio" name="price_range" value="200_350" {% if price_range == '200_350' %}checked{% endif %} class="text-black focus:ring-black">
+              <span>200.000₫ - 350.000₫</span>
+            </label>
+            <label class="flex items-center gap-2 text-gray-700 cursor-pointer">
+              <input type="radio" name="price_range" value="350_500" {% if price_range == '350_500' %}checked{% endif %} class="text-black focus:ring-black">
+              <span>350.000₫ - 500.000₫</span>
+            </label>
+            <label class="flex items-center gap-2 text-gray-700 cursor-pointer">
+              <input type="radio" name="price_range" value="over_500" {% if price_range == 'over_500' %}checked{% endif %} class="text-black focus:ring-black">
+              <span>Trên 500.000₫</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Filter: Sizes -->
+        <div class="bg-white p-5 rounded-2xl border border-gray-200/80 shadow-xs">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-gray-900 mb-3">
+            Kích thước (Size)
+          </h3>
+          <div class="flex flex-wrap gap-2">
+            {% for s in available_sizes %}
+              <label class="cursor-pointer">
+                <input type="radio" name="size" value="{{ s }}" {% if selected_size == s %}checked{% endif %} class="sr-only peer">
+                <span class="block px-3 py-1.5 text-xs font-semibold rounded-lg border border-gray-200 peer-checked:bg-black peer-checked:text-white peer-checked:border-black hover:border-gray-400 transition-colors text-center min-w-[36px]">
+                  {{ s }}
+                </span>
+              </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Filter: Colors -->
+        <div class="bg-white p-5 rounded-2xl border border-gray-200/80 shadow-xs">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-gray-900 mb-3">
+            Màu sắc
+          </h3>
+          <div class="flex flex-wrap gap-2.5">
+            {% for c in available_colors %}
+              <label class="cursor-pointer group relative" title="{{ c.name }}">
+                <input type="radio" name="color" value="{{ c.name }}" {% if selected_color == c.name %}checked{% endif %} class="sr-only peer">
+                <span 
+                  class="block w-7 h-7 rounded-full border border-gray-300 peer-checked:ring-2 peer-checked:ring-black peer-checked:ring-offset-2 transition-all"
+                  style="background-color: {{ c.hex }};"
+                ></span>
+                <span class="text-[10px] text-gray-500 block text-center mt-1">{{ c.name }}</span>
+              </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="space-y-2 pt-2">
+          <button type="submit" class="w-full bg-black hover:bg-zinc-800 text-white text-xs font-bold py-3 rounded-xl shadow-sm transition-colors">
+            ÁP DỤNG BỘ LỌC
+          </button>
+          <a href="{% url 'products:product_list' %}" class="block text-center w-full py-2.5 text-xs font-semibold text-gray-600 hover:text-black">
+            Đặt lại tất cả
+          </a>
+        </div>
+
+      </form>
+    </aside>
+
+    <!-- PRODUCTS MAIN CONTENT -->
+    <div class="lg:col-span-3">
+      
+      <!-- Top Sorting Bar -->
+      <div class="bg-white p-4 rounded-2xl border border-gray-200/80 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <span class="text-xs font-semibold text-gray-600">
+          Tìm thấy <strong class="text-black">{{ total_count }}</strong> sản phẩm
+        </span>
+
+        <!-- Sorting Dropdown -->
+        <div class="flex items-center gap-2 self-end sm:self-auto">
+          <label for="sortBySelect" class="text-xs font-bold text-gray-500 whitespace-nowrap">Sắp xếp:</label>
+          <select 
+            id="sortBySelect" 
+            onchange="handleSortChange(this.value)"
+            class="bg-gray-50 border border-gray-200 text-xs font-semibold text-gray-800 rounded-xl px-3 py-2 focus:outline-none focus:border-black cursor-pointer"
+          >
+            <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Mới nhất</option>
+            <option value="best_seller" {% if sort_by == 'best_seller' %}selected{% endif %}>Bán chạy nhất</option>
+            <option value="price_asc" {% if sort_by == 'price_asc' %}selected{% endif %}>Giá tăng dần</option>
+            <option value="price_desc" {% if sort_by == 'price_desc' %}selected{% endif %}>Giá giảm dần</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Products Grid -->
+      {% if products %}
+        <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-4 sm:gap-6">
+          {% for product in products %}
+            {% include 'components/product_card.html' with product=product %}
+          {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+          <div class="mt-12 flex justify-center items-center gap-2">
+            
+            {% if page_obj.has_previous %}
+              <a 
+                href="?page={{ page_obj.previous_page_number }}{% if current_category %}&category={{ current_category.slug }}{% endif %}{% if query %}&q={{ query }}{% endif %}{% if price_range %}&price_range={{ price_range }}{% endif %}{% if selected_size %}&size={{ selected_size }}{% endif %}{% if selected_color %}&color={{ selected_color }}{% endif %}&sort_by={{ sort_by }}"
+                class="px-3 py-2 rounded-lg bg-white border border-gray-200 text-xs font-bold text-gray-700 hover:bg-gray-50"
+              >
+                ← Trước
+              </a>
+            {% endif %}
+
+            {% for p in page_obj.paginator.page_range %}
+              {% if page_obj.number == p %}
+                <span class="w-9 h-9 rounded-lg bg-black text-white text-xs font-bold flex items-center justify-center">
+                  {{ p }}
+                </span>
+              {% elif p >= page_obj.number|add:'-2' and p <= page_obj.number|add:'2' %}
+                <a 
+                  href="?page={{ p }}{% if current_category %}&category={{ current_category.slug }}{% endif %}{% if query %}&q={{ query }}{% endif %}{% if price_range %}&price_range={{ price_range }}{% endif %}{% if selected_size %}&size={{ selected_size }}{% endif %}{% if selected_color %}&color={{ selected_color }}{% endif %}&sort_by={{ sort_by }}"
+                  class="w-9 h-9 rounded-lg bg-white border border-gray-200 text-xs font-semibold text-gray-700 hover:bg-gray-50 flex items-center justify-center"
+                >
+                  {{ p }}
+                </a>
+              {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+              <a 
+                href="?page={{ page_obj.next_page_number }}{% if current_category %}&category={{ current_category.slug }}{% endif %}{% if query %}&q={{ query }}{% endif %}{% if price_range %}&price_range={{ price_range }}{% endif %}{% if selected_size %}&size={{ selected_size }}{% endif %}{% if selected_color %}&color={{ selected_color }}{% endif %}&sort_by={{ sort_by }}"
+                class="px-3 py-2 rounded-lg bg-white border border-gray-200 text-xs font-bold text-gray-700 hover:bg-gray-50"
+              >
+                Sau →
+              </a>
+            {% endif %}
+
+          </div>
+        {% endif %}
+
+      {% else %}
+        <!-- Empty State -->
+        <div class="bg-white rounded-2xl border border-gray-200 p-12 text-center space-y-4">
+          <div class="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto text-gray-400 text-2xl">
+            🔍
+          </div>
+          <h3 class="text-base font-bold text-gray-900">Không tìm thấy sản phẩm phù hợp</h3>
+          <p class="text-xs text-gray-500 max-w-sm mx-auto leading-relaxed">
+            Rất tiếc, không có sản phẩm nào khớp với bộ lọc hoặc từ khóa tìm kiếm của bạn. Hãy thử thay đổi bộ lọc hoặc xem tất cả sản phẩm.
+          </p>
+          <div class="pt-2">
+            <a href="{% url 'products:product_list' %}" class="inline-block bg-black text-white text-xs font-bold px-6 py-2.5 rounded-xl hover:bg-zinc-800 transition-colors">
+              XEM TẤT CẢ SẢN PHẨM
+            </a>
+          </div>
+        </div>
+      {% endif %}
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Mobile Filter Slideover Drawer -->
+<div id="filterDrawer" class="fixed inset-0 z-50 invisible transition-all duration-300 sm:hidden">
+  <div id="filterBackdrop" class="fixed inset-0 bg-black/50 opacity-0 transition-opacity duration-300" onclick="closeFilterDrawer()"></div>
+  <div id="filterPanel" class="fixed inset-y-0 right-0 w-80 max-w-[85vw] bg-white shadow-2xl translate-x-full transition-transform duration-300 overflow-y-auto p-5">
+    
+    <div class="flex items-center justify-between pb-4 border-b border-gray-100 mb-4">
+      <h3 class="text-sm font-bold uppercase text-gray-900">Bộ Lọc Sản Phẩm</h3>
+      <button onclick="closeFilterDrawer()" class="text-gray-400 p-1">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <!-- Clone filter inputs for mobile submission -->
+    <form action="{% url 'products:product_list' %}" method="GET" class="space-y-5">
+      {% if current_category %}<input type="hidden" name="category" value="{{ current_category.slug }}">{% endif %}
+      {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
+      <input type="hidden" name="sort_by" value="{{ sort_by }}">
+
+      <!-- Price -->
+      <div>
+        <h4 class="text-xs font-bold uppercase text-gray-700 mb-2">Khoảng giá</h4>
+        <div class="space-y-1.5 text-xs">
+          <label class="flex items-center gap-2"><input type="radio" name="price_range" value="" {% if not price_range %}checked{% endif %}><span>Tất cả</span></label>
+          <label class="flex items-center gap-2"><input type="radio" name="price_range" value="under_200" {% if price_range == 'under_200' %}checked{% endif %}><span>Dưới 200.000₫</span></label>
+          <label class="flex items-center gap-2"><input type="radio" name="price_range" value="200_350" {% if price_range == '200_350' %}checked{% endif %}><span>200.000₫ - 350.000₫</span></label>
+          <label class="flex items-center gap-2"><input type="radio" name="price_range" value="350_500" {% if price_range == '350_500' %}checked{% endif %}><span>350.000₫ - 500.000₫</span></label>
+          <label class="flex items-center gap-2"><input type="radio" name="price_range" value="over_500" {% if price_range == 'over_500' %}checked{% endif %}><span>Trên 500.000₫</span></label>
+        </div>
+      </div>
+
+      <!-- Size -->
+      <div>
+        <h4 class="text-xs font-bold uppercase text-gray-700 mb-2">Kích thước</h4>
+        <div class="flex flex-wrap gap-1.5">
+          {% for s in available_sizes %}
+            <label class="cursor-pointer">
+              <input type="radio" name="size" value="{{ s }}" {% if selected_size == s %}checked{% endif %} class="sr-only peer">
+              <span class="block px-2.5 py-1 text-xs rounded border border-gray-200 peer-checked:bg-black peer-checked:text-white">{{ s }}</span>
+            </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      <button type="submit" class="w-full bg-black text-white py-3 rounded-xl font-bold text-xs">
+        ÁP DỤNG
+      </button>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function handleSortChange(sortVal) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('sort_by', sortVal);
+    window.location.href = url.toString();
+  }
+
+  function openFilterDrawer() {
+    const d = document.getElementById('filterDrawer');
+    if (!d) return;
+    d.classList.remove('invisible');
+    setTimeout(() => {
+      document.getElementById('filterBackdrop').classList.remove('opacity-0');
+      document.getElementById('filterPanel').classList.remove('translate-x-full');
+    }, 10);
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeFilterDrawer() {
+    const d = document.getElementById('filterDrawer');
+    if (!d) return;
+    document.getElementById('filterBackdrop').classList.add('opacity-0');
+    document.getElementById('filterPanel').classList.add('translate-x-full');
+    setTimeout(() => {
+      d.classList.add('invisible');
+      document.body.style.overflow = '';
+    }, 300);
+  }
+</script>
+{% endblock %}

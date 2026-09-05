@@ -1,0 +1,387 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load product_tags %}
+
+{% block title %}Myshop &bull; Trang Phục Nam Bền, Mềm, Không Lỗi Mốt{% endblock %}
+
+{% block content %}
+
+<!-- Hero Banner Slider -->
+<section class="relative bg-zinc-950 text-white overflow-hidden">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-32 relative z-10 flex flex-col items-start justify-center min-h-[520px]">
+    
+    <div class="max-w-2xl space-y-6">
+      
+      <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/15 px-3 py-1.5 rounded-full">
+        <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+        <span class="text-xs font-bold uppercase tracking-widest text-zinc-200">Bộ Sưu Tập Mới 2025</span>
+      </div>
+
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight uppercase leading-tight">
+        Mặc Bền &bull; Mặc Mềm <br>
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-200 to-zinc-400">
+          Không Lỗi Mốt
+        </span>
+      </h1>
+
+      <p class="text-base sm:text-lg text-zinc-300 font-normal leading-relaxed">
+        Phát triển theo triết lý thời trang <strong>Vị Nhân Sinh</strong>. Công nghệ dệt may <em>ColorLock™</em> và <em>FlexFit™</em> giúp tôn dáng và nâng tầm phong thái nam giới Việt.
+      </p>
+
+      <div class="flex flex-wrap items-center gap-4 pt-4">
+        <a 
+          href="{% url 'products:product_list' %}" 
+          class="bg-white hover:bg-zinc-100 text-black font-extrabold px-8 py-3.5 rounded-xl text-sm transition-all shadow-lg hover:shadow-white/20 active:scale-95"
+        >
+          KHÁM PHÁ NGAY
+        </a>
+        <a 
+          href="{% url 'products:product_list' %}?price_range=200_350" 
+          class="bg-rose-600 hover:bg-rose-700 text-white font-extrabold px-8 py-3.5 rounded-xl text-sm transition-all shadow-lg hover:shadow-rose-600/30 flex items-center gap-2 active:scale-95"
+        >
+          <span>SĂN SALE ĐẶC BIỆT</span>
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+          </svg>
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Background Visual Overlay -->
+  <div class="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-black/30 z-0"></div>
+  <img 
+    src="https://images.unsplash.com/photo-1490578474895-699cd4e2cf59?w=1600&auto=format&fit=crop&q=80" 
+    alt="YaMe Fashion Model" 
+    class="absolute inset-0 w-full h-full object-cover object-center opacity-60 mix-blend-luminosity scale-105 transition-transform duration-1000"
+  >
+</section>
+
+<!-- Quick Categories Bar -->
+<section class="py-10 bg-white border-b border-gray-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-6">
+      <h2 class="text-xs font-bold uppercase tracking-widest text-gray-400">Danh Mục Sản Phẩm Nam</h2>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
+      
+      <a href="{% url 'products:product_list' %}?category=ao-polo" class="group flex flex-col items-center text-center p-3 rounded-xl hover:bg-gray-50 border border-gray-100 hover:border-gray-200 transition-all">
+        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-zinc-100 flex items-center justify-center mb-2 text-2xl group-hover:scale-110 transition-transform shadow-xs overflow-hidden">
+          👕
+        </div>
+        <span class="text-xs sm:text-sm font-bold text-gray-900 group-hover:text-rose-600 transition-colors">Áo Polo</span>
+        <span class="text-[10px] text-gray-400">ColorLock™</span>
+      </a>
+
+      <a href="{% url 'products:product_list' %}?category=ao-thun" class="group flex flex-col items-center text-center p-3 rounded-xl hover:bg-gray-50 border border-gray-100 hover:border-gray-200 transition-all">
+        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-zinc-100 flex items-center justify-center mb-2 text-2xl group-hover:scale-110 transition-transform shadow-xs overflow-hidden">
+          🎽
+        </div>
+        <span class="text-xs sm:text-sm font-bold text-gray-900 group-hover:text-rose-600 transition-colors">Áo Thun</span>
+        <span class="text-[10px] text-gray-400">AirDry™</span>
+      </a>
+
+      <a href="{% url 'products:product_list' %}?category=ao-so-mi" class="group flex flex-col items-center text-center p-3 rounded-xl hover:bg-gray-50 border border-gray-100 hover:border-gray-200 transition-all">
+        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-zinc-100 flex items-center justify-center mb-2 text-2xl group-hover:scale-110 transition-transform shadow-xs overflow-hidden">
+          👔
+        </div>
+        <span class="text-xs sm:text-sm font-bold text-gray-900 group-hover:text-rose-600 transition-colors">Áo Sơ Mi</span>
+        <span class="text-[10px] text-gray-400">Chống nhăn</span>
+      </a>
+
+      <a href="{% url 'products:product_list' %}?category=ao-khoac" class="group flex flex-col items-center text-center p-3 rounded-xl hover:bg-gray-50 border border-gray-100 hover:border-gray-200 transition-all">
+        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-zinc-100 flex items-center justify-center mb-2 text-2xl group-hover:scale-110 transition-transform shadow-xs overflow-hidden">
+          🧥
+        </div>
+        <span class="text-xs sm:text-sm font-bold text-gray-900 group-hover:text-rose-600 transition-colors">Áo Khoác</span>
+        <span class="text-[10px] text-gray-400">Gió & Kaki</span>
+      </a>
+
+      <a href="{% url 'products:product_list' %}?category=quan-jeans" class="group flex flex-col items-center text-center p-3 rounded-xl hover:bg-gray-50 border border-gray-100 hover:border-gray-200 transition-all">
+        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-zinc-100 flex items-center justify-center mb-2 text-2xl group-hover:scale-110 transition-transform shadow-xs overflow-hidden">
+          👖
+        </div>
+        <span class="text-xs sm:text-sm font-bold text-gray-900 group-hover:text-rose-600 transition-colors">Quần Jeans</span>
+        <span class="text-[10px] text-gray-400">Tek Black</span>
+      </a>
+
+      <a href="{% url 'products:product_list' %}?category=phu-kien" class="group flex flex-col items-center text-center p-3 rounded-xl hover:bg-gray-50 border border-gray-100 hover:border-gray-200 transition-all">
+        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-zinc-100 flex items-center justify-center mb-2 text-2xl group-hover:scale-110 transition-transform shadow-xs overflow-hidden">
+          🎒
+        </div>
+        <span class="text-xs sm:text-sm font-bold text-gray-900 group-hover:text-rose-600 transition-colors">Phụ Kiện</span>
+        <span class="text-[10px] text-gray-400">Balo & Ví</span>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- Flash Sale Section -->
+<section class="py-12 sm:py-16 bg-gradient-to-b from-gray-50 to-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 pb-4 border-b border-gray-200">
+      <div>
+        <div class="flex items-center gap-2 mb-1">
+          <span class="inline-flex items-center gap-1 bg-rose-600 text-white text-xs font-black px-2.5 py-1 rounded-md animate-pulse">
+            🔥 FLASH SALE
+          </span>
+          <span class="text-xs font-bold text-rose-600 uppercase tracking-wider">GIÁ ĐẶC BIỆT TRONG NGÀY</span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">Ưu Đãi Đang Diễn Ra</h2>
+      </div>
+
+      <!-- Live Countdown Timer -->
+      <div class="flex items-center gap-3">
+        <span class="text-xs font-semibold text-gray-500">Kết thúc sau:</span>
+        <div class="flex items-center gap-1 font-mono text-sm font-bold text-white">
+          <span id="hours" class="bg-black px-2.5 py-1 rounded-md">05</span>
+          <span class="text-black">:</span>
+          <span id="minutes" class="bg-black px-2.5 py-1 rounded-md">24</span>
+          <span class="text-black">:</span>
+          <span id="seconds" class="bg-rose-600 px-2.5 py-1 rounded-md">18</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Flash Sale Products Grid -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+      {% for product in flash_sale_products %}
+        {% include 'components/product_card.html' with product=product %}
+      {% empty %}
+        <!-- In case no sale products in DB yet, show fallback cards -->
+        {% for product in latest_products %}
+          {% include 'components/product_card.html' with product=product %}
+        {% endfor %}
+      {% endfor %}
+    </div>
+
+    <div class="mt-10 text-center">
+      <a 
+        href="{% url 'products:product_list' %}" 
+        class="inline-flex items-center gap-2 border-2 border-black hover:bg-black hover:text-white text-black font-extrabold px-8 py-3 rounded-xl text-sm transition-all"
+      >
+        <span>XEM TẤT CẢ ƯU ĐÃI</span>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+        </svg>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<!-- YaMe Featured Collections Banner Showcase -->
+<section class="py-12 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-2xl mx-auto mb-10">
+      <h2 class="text-2xl sm:text-3xl font-black text-gray-900 uppercase tracking-tight">Bộ Sưu Tập Tiêu Biểu</h2>
+      <p class="text-sm text-gray-500 mt-2">Mỗi bộ sưu tập là một tuyên ngôn về phong cách và chất liệu nam tính tối giản</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      
+      <!-- Non-Branded -->
+      <div class="relative group rounded-2xl overflow-hidden bg-zinc-900 text-white min-h-[360px] flex flex-col justify-end p-8 border border-zinc-800">
+        <img 
+          src="https://images.unsplash.com/photo-1516826957135-700dedea698c?w=800&auto=format&fit=crop&q=80" 
+          alt="Non-Branded YaMe" 
+          class="absolute inset-0 w-full h-full object-cover object-center opacity-40 group-hover:scale-105 transition-transform duration-700"
+        >
+        <div class="relative z-10 space-y-2">
+          <span class="text-xs font-black tracking-widest text-amber-400 uppercase">TỐI GIẢN &bull; KHÔNG LOGO</span>
+          <h3 class="text-2xl font-black">Non-Branded</h3>
+          <p class="text-xs text-zinc-300 line-clamp-2">Sự tinh tế không nằm ở logo, mà ở cách chiếc áo ứng xử với cơ thể người mặc.</p>
+          <a href="{% url 'products:product_list' %}?q=Non+Branded" class="inline-block text-xs font-bold text-white underline pt-2 hover:text-rose-400">Khám phá dòng sản phẩm →</a>
+        </div>
+      </div>
+
+      <!-- Seventy Seven -->
+      <div class="relative group rounded-2xl overflow-hidden bg-zinc-900 text-white min-h-[360px] flex flex-col justify-end p-8 border border-zinc-800">
+        <img 
+          src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&auto=format&fit=crop&q=80" 
+          alt="Seventy Seven YaMe" 
+          class="absolute inset-0 w-full h-full object-cover object-center opacity-40 group-hover:scale-105 transition-transform duration-700"
+        >
+        <div class="relative z-10 space-y-2">
+          <span class="text-xs font-black tracking-widest text-rose-400 uppercase">THIẾT YẾU &bull; KHÔNG LỖI MỐT</span>
+          <h3 class="text-2xl font-black">Seventy Seven</h3>
+          <p class="text-xs text-zinc-300 line-clamp-2">Form dáng Modern Fit chuẩn mực cho mọi sự kiện thường nhật, chất liệu bền bỉ.</p>
+          <a href="{% url 'products:product_list' %}?q=Seventy+Seven" class="inline-block text-xs font-bold text-white underline pt-2 hover:text-rose-400">Khám phá dòng sản phẩm →</a>
+        </div>
+      </div>
+
+      <!-- The Worker -->
+      <div class="relative group rounded-2xl overflow-hidden bg-zinc-900 text-white min-h-[360px] flex flex-col justify-end p-8 border border-zinc-800">
+        <img 
+          src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=800&auto=format&fit=crop&q=80" 
+          alt="The Worker YaMe" 
+          class="absolute inset-0 w-full h-full object-cover object-center opacity-40 group-hover:scale-105 transition-transform duration-700"
+        >
+        <div class="relative z-10 space-y-2">
+          <span class="text-xs font-black tracking-widest text-sky-400 uppercase">BỀN BỈ &bull; PHONG TRẦN</span>
+          <h3 class="text-2xl font-black">The Worker</h3>
+          <p class="text-xs text-zinc-300 line-clamp-2">Chất kaki và jean dày dặn, cản gió, nhiều túi phụ tiện dụng cho người đam mê xê dịch.</p>
+          <a href="{% url 'products:product_list' %}?q=The+Worker" class="inline-block text-xs font-bold text-white underline pt-2 hover:text-rose-400">Khám phá dòng sản phẩm →</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Latest Arrivals / Sản phẩm mới nhất -->
+<section class="py-12 sm:py-16 bg-gray-50 border-t border-gray-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <div class="flex items-center justify-between mb-8 pb-4 border-b border-gray-200">
+      <div>
+        <span class="text-xs font-bold uppercase tracking-wider text-rose-600">Sản Phẩm Mới</span>
+        <h2 class="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">Hàng Mới Lên Kệ Tuần Này</h2>
+      </div>
+      <a href="{% url 'products:product_list' %}" class="hidden sm:inline-flex items-center gap-1 text-sm font-bold text-black hover:text-rose-600 transition-colors">
+        Xem tất cả
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+      {% for product in latest_products %}
+        {% include 'components/product_card.html' with product=product %}
+      {% empty %}
+        <div class="col-span-full py-12 text-center text-gray-500">
+          Chưa có sản phẩm nào được cập nhật.
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="mt-8 text-center sm:hidden">
+      <a href="{% url 'products:product_list' %}" class="text-sm font-bold text-rose-600 underline">
+        Xem tất cả sản phẩm mới →
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<!-- Technology & Fabric Story Section -->
+<section class="py-16 bg-zinc-950 text-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <div class="max-w-3xl mb-12">
+      <span class="text-xs font-black uppercase tracking-widest text-rose-500">ĐỘT PHÁ CÔNG NGHỆ SỢI VẢI</span>
+      <h2 class="text-3xl sm:text-4xl font-black uppercase tracking-tight mt-2">
+        Công Nghệ Dệt May Chuẩn Myshop
+      </h2>
+      <p class="text-sm text-zinc-400 mt-3 leading-relaxed">
+        Chúng tôi đầu tư vào nghiên cứu kỹ thuật xử lý bề mặt sợi để tạo ra những sản phẩm mặc thoải mái, giữ màu sắc nguyên bản và tôn dáng người mặc.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      
+      <!-- Tech 1: ColorLock -->
+      <div class="p-6 rounded-2xl bg-zinc-900 border border-zinc-800 space-y-4">
+        <div class="w-12 h-12 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center justify-center font-black text-xl">
+          01
+        </div>
+        <h3 class="text-lg font-bold text-white">ColorLock™ Khóa Màu</h3>
+        <p class="text-xs text-zinc-400 leading-relaxed">
+          Phân tử màu nhuộm ngấm sâu vào lõi sợi Polyester Pique, triệt tiêu hiện tượng phai màu, bạc vai áo sau hơn 100 lần giặt máy thông thường.
+        </p>
+      </div>
+
+      <!-- Tech 2: FlexFit -->
+      <div class="p-6 rounded-2xl bg-zinc-900 border border-zinc-800 space-y-4">
+        <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center font-black text-xl">
+          02
+        </div>
+        <h3 class="text-lg font-bold text-white">FlexFit™ Co Giãn 4 Chiều</h3>
+        <p class="text-xs text-zinc-400 leading-relaxed">
+          Tỷ lệ 5% sợi Spandex đan xen đa hướng tạo độ co giãn linh hoạt, ôm vừa vặn cơ thể mà không gây gò bó khi cử động hay vận động thể thao.
+        </p>
+      </div>
+
+      <!-- Tech 3: AirDry -->
+      <div class="p-6 rounded-2xl bg-zinc-900 border border-zinc-800 space-y-4">
+        <div class="w-12 h-12 rounded-xl bg-sky-500/10 text-sky-400 border border-sky-500/20 flex items-center justify-center font-black text-xl">
+          03
+        </div>
+        <h3 class="text-lg font-bold text-white">AirDry™ Thoát Ẩm Siêu Tốc</h3>
+        <p class="text-xs text-zinc-400 leading-relaxed">
+          Cấu trúc dệt mắt lưới siêu vi mô giúp đối lưu không khí hai chiều, hút mồ hôi từ da và bay hơi tức thì, giữ cơ thể luôn khô thoáng suốt ngày dài.
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- Customer Reviews Ticker Section -->
+{% if featured_reviews %}
+<section class="py-14 bg-white border-t border-gray-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-xl mx-auto mb-10">
+      <span class="text-xs font-bold uppercase tracking-wider text-amber-500">TRẢI NGHIỆM THỰC TẾ</span>
+      <h2 class="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight mt-1">Đánh Giá Từ Khách Hàng Myshop</h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {% for review in featured_reviews %}
+        <div class="bg-gray-50 rounded-2xl p-5 border border-gray-100 flex flex-col justify-between space-y-4">
+          <div class="space-y-2">
+            <div class="flex items-center text-amber-400 text-sm">
+              ★★★★★
+            </div>
+            <p class="text-xs text-gray-700 leading-relaxed italic">
+              "{{ review.content }}"
+            </p>
+          </div>
+          <div class="pt-3 border-t border-gray-200/60 flex items-center justify-between text-xs">
+            <span class="font-bold text-gray-900">{{ review.user.username }}</span>
+            <span class="text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
+              ✓ Đã mua hàng
+            </span>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Countdown Timer simulation
+  function updateTimer() {
+    let s = parseInt(document.getElementById('seconds')?.innerText || '18');
+    let m = parseInt(document.getElementById('minutes')?.innerText || '24');
+    let h = parseInt(document.getElementById('hours')?.innerText || '5');
+
+    s--;
+    if (s < 0) {
+      s = 59;
+      m--;
+      if (m < 0) {
+        m = 59;
+        h--;
+        if (h < 0) h = 12;
+      }
+    }
+
+    if (document.getElementById('seconds')) document.getElementById('seconds').innerText = s < 10 ? '0' + s : s;
+    if (document.getElementById('minutes')) document.getElementById('minutes').innerText = m < 10 ? '0' + m : m;
+    if (document.getElementById('hours')) document.getElementById('hours').innerText = h < 10 ? '0' + h : h;
+  }
+  setInterval(updateTimer, 1000);
+</script>
+{% endblock %}

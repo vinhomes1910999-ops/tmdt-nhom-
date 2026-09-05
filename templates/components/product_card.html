@@ -1,0 +1,114 @@
+{% load product_tags %}
+
+<div class="product-card group bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-gray-300 hover:shadow-lg transition-all duration-300 flex flex-col justify-between">
+  
+  <!-- Image Box -->
+  <div class="relative w-full aspect-[3/4] bg-gray-100 product-image-container overflow-hidden">
+    <a href="{% url 'products:product_detail' product.slug %}" class="block w-full h-full">
+      {% if product.images.first %}
+        <img 
+          src="{{ product.images.first.image.url }}" 
+          alt="{{ product.name }}"
+          loading="lazy"
+          class="w-full h-full object-cover object-center"
+        >
+      {% else %}
+        <!-- Aesthetic Fashion Fallback Image -->
+        <img 
+          src="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&auto=format&fit=crop&q=80" 
+          alt="{{ product.name }}"
+          loading="lazy"
+          class="w-full h-full object-cover object-center"
+        >
+      {% endif %}
+    </a>
+
+    <!-- Badges -->
+    <div class="absolute top-2.5 left-2.5 flex flex-col gap-1 z-10">
+      {% if product.discount_percent > 0 %}
+        <span class="bg-rose-600 text-white text-[11px] font-black px-2 py-0.5 rounded shadow-sm">
+          -{{ product.discount_percent }}%
+        </span>
+      {% endif %}
+      {% if product.sold_count > 500 %}
+        <span class="bg-amber-500 text-black text-[10px] font-extrabold px-1.5 py-0.5 rounded shadow-xs uppercase">
+          BÁN CHẠY
+        </span>
+      {% endif %}
+    </div>
+
+    <!-- Quick Add to Cart Button on Card Hover -->
+    <div class="absolute inset-x-3 bottom-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+      <a 
+        href="{% url 'cart:add' product.id %}" 
+        class="w-full bg-black/90 hover:bg-black text-white text-xs font-bold py-2.5 px-4 rounded-lg backdrop-blur-xs flex items-center justify-center gap-2 shadow-md transition-all hover:scale-[1.02] active:scale-[0.98]"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+        </svg>
+        <span>Thêm vào giỏ</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Content Box -->
+  <div class="p-4 flex flex-col flex-grow justify-between gap-2.5">
+    
+    <div>
+      <!-- Category & Material -->
+      <div class="flex items-center justify-between text-[11px] text-gray-500 uppercase font-semibold mb-1">
+        <span>{{ product.category.name|default:'Thời trang nam' }}</span>
+        {% if product.material %}
+          <span class="text-zinc-400 truncate max-w-[110px]">{{ product.material }}</span>
+        {% endif %}
+      </div>
+
+      <!-- Product Name -->
+      <h3 class="text-sm font-semibold text-gray-900 group-hover:text-rose-600 transition-colors line-clamp-2 leading-snug">
+        <a href="{% url 'products:product_detail' product.slug %}" title="{{ product.name }}">
+          {{ product.name }}
+        </a>
+      </h3>
+    </div>
+
+    <div>
+      <!-- Color Swatches preview dots -->
+      {% if product.colors %}
+        <div class="flex items-center gap-1 mb-2">
+          {% for color in product.colors|split_string %}
+            {% if forloop.counter <= 4 %}
+              <span class="inline-block text-[10px] px-1.5 py-0.5 rounded bg-gray-100 text-gray-600 font-medium">
+                {{ color }}
+              </span>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <!-- Price & Rating -->
+      <div class="flex items-baseline justify-between pt-1 border-t border-gray-50">
+        <div class="flex items-baseline gap-2 flex-wrap">
+          <span class="text-base font-extrabold text-rose-600">
+            {{ product.current_price|vnd }}
+          </span>
+          {% if product.sale_price and product.price > product.sale_price %}
+            <span class="text-xs text-gray-400 line-through font-normal">
+              {{ product.price|vnd }}
+            </span>
+          {% endif %}
+        </div>
+
+        <!-- Rating Stars & Sold -->
+        <div class="flex items-center gap-1 text-[11px] text-gray-500">
+          <span class="text-amber-400">★</span>
+          <span class="font-bold text-gray-700">{{ product.average_rating|default:'5.0' }}</span>
+          {% if product.sold_count > 0 %}
+            <span class="text-gray-400">({{ product.sold_count }})</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
