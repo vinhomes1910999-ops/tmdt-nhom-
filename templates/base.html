@@ -1,0 +1,226 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Myshop &bull; Trang Phục Nam Bền, Mềm, Không Lỗi Mốt{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}Myshop là thương hiệu thời trang nam phát triển theo triết lý Vị Nhân Sinh: Mặc Bền, Mặc Mềm, Mặc Không Lỗi Mốt.{% endblock %}">
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            primary: '#09090b',
+            accent: '#e11d48',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+
+  {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-[#fafafa] text-gray-900 font-sans antialiased min-h-screen flex flex-col justify-between selection:bg-rose-500 selection:text-white">
+
+  <!-- Flash Messages Alert Toasts -->
+  {% if messages %}
+    <div class="fixed top-20 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-auto">
+      {% for message in messages %}
+        <div class="p-4 rounded-xl shadow-xl flex items-center justify-between gap-3 text-sm font-medium transition-all duration-300 {% if message.tags == 'error' %}bg-rose-600 text-white{% else %}bg-zinc-900 text-white border border-zinc-700{% endif %}" role="alert">
+          <div class="flex items-center gap-2.5">
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span>{{ message }}</span>
+          </div>
+          <button onclick="this.parentElement.remove()" class="text-white/70 hover:text-white" aria-label="Đóng">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Header -->
+  {% include 'components/header.html' %}
+
+  <!-- Main Body Content -->
+  <main class="flex-grow">
+    {% block content %}
+    {% endblock %}
+  </main>
+
+  <!-- Footer -->
+  {% include 'components/footer.html' %}
+
+  <!-- Modal: Hướng dẫn chọn Size YaMe -->
+  <div id="sizeGuideModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto transform scale-95 transition-transform duration-300">
+      
+      <div class="flex items-center justify-between pb-4 border-b border-gray-100 mb-5">
+        <div class="flex items-center gap-2">
+          <span class="text-rose-600 font-black text-xl">Myshop</span>
+          <h3 class="text-lg font-bold text-gray-900">Bảng Quy Đổi & Hướng Dẫn Chọn Size Nam</h3>
+        </div>
+        <button onclick="closeSizeGuideModal()" class="text-gray-400 hover:text-gray-700 p-1.5 rounded-lg hover:bg-gray-100">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <p class="text-xs text-gray-500 mb-4">
+        * Bảng số đo chuẩn theo thể trạng nam giới Việt Nam dựa trên nghiên cứu nhân trắc học của Myshop. Nếu bạn nằm giữa 2 size, hãy chọn size lớn hơn để mặc thoải mái.
+      </p>
+
+      <!-- Table Áo -->
+      <h4 class="text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">1. Bảng size Áo (Thun, Polo, Sơ mi, Áo khoác)</h4>
+      <div class="overflow-x-auto mb-6">
+        <table class="w-full text-xs text-left border border-gray-200 rounded-lg overflow-hidden">
+          <thead class="bg-gray-50 text-gray-700 font-bold">
+            <tr>
+              <th class="p-2.5 border-b border-r border-gray-200">Size</th>
+              <th class="p-2.5 border-b border-r border-gray-200">Chiều cao (cm)</th>
+              <th class="p-2.5 border-b border-r border-gray-200">Cân nặng (kg)</th>
+              <th class="p-2.5 border-b border-gray-200">Vòng ngực (cm)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <tr class="hover:bg-gray-50/50">
+              <td class="p-2.5 font-bold text-gray-900 border-r border-gray-200">S (F1)</td>
+              <td class="p-2.5 border-r border-gray-200">1m55 - 1m65</td>
+              <td class="p-2.5 border-r border-gray-200">48 - 56 kg</td>
+              <td class="p-2.5">86 - 90 cm</td>
+            </tr>
+            <tr class="hover:bg-gray-50/50">
+              <td class="p-2.5 font-bold text-gray-900 border-r border-gray-200">M (F2)</td>
+              <td class="p-2.5 border-r border-gray-200">1m65 - 1m72</td>
+              <td class="p-2.5 border-r border-gray-200">57 - 65 kg</td>
+              <td class="p-2.5">91 - 95 cm</td>
+            </tr>
+            <tr class="hover:bg-gray-50/50">
+              <td class="p-2.5 font-bold text-gray-900 border-r border-gray-200">L (F3)</td>
+              <td class="p-2.5 border-r border-gray-200">1m70 - 1m78</td>
+              <td class="p-2.5 border-r border-gray-200">66 - 74 kg</td>
+              <td class="p-2.5">96 - 100 cm</td>
+            </tr>
+            <tr class="hover:bg-gray-50/50">
+              <td class="p-2.5 font-bold text-gray-900 border-r border-gray-200">XL (F4)</td>
+              <td class="p-2.5 border-r border-gray-200">1m75 - 1m83</td>
+              <td class="p-2.5 border-r border-gray-200">75 - 83 kg</td>
+              <td class="p-2.5">101 - 106 cm</td>
+            </tr>
+            <tr class="hover:bg-gray-50/50">
+              <td class="p-2.5 font-bold text-gray-900 border-r border-gray-200">XXL (F5)</td>
+              <td class="p-2.5 border-r border-gray-200">1m80 - 1m90</td>
+              <td class="p-2.5 border-r border-gray-200">84 - 95 kg</td>
+              <td class="p-2.5">107 - 114 cm</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Table Quần -->
+      <h4 class="text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">2. Bảng size Quần (Jeans, Quần tây, Kaki)</h4>
+      <div class="overflow-x-auto">
+        <table class="w-full text-xs text-left border border-gray-200 rounded-lg overflow-hidden">
+          <thead class="bg-gray-50 text-gray-700 font-bold">
+            <tr>
+              <th class="p-2.5 border-b border-r border-gray-200">Size số</th>
+              <th class="p-2.5 border-b border-r border-gray-200">Vòng bụng (cm)</th>
+              <th class="p-2.5 border-b border-r border-gray-200">Cân nặng (kg)</th>
+              <th class="p-2.5 border-b border-gray-200">Chiều dài quần (cm)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <tr><td class="p-2.5 font-bold border-r">29</td><td class="p-2.5 border-r">74 - 76</td><td class="p-2.5 border-r">50 - 56 kg</td><td class="p-2.5">96 cm</td></tr>
+            <tr><td class="p-2.5 font-bold border-r">30</td><td class="p-2.5 border-r">77 - 79</td><td class="p-2.5 border-r">57 - 63 kg</td><td class="p-2.5">98 cm</td></tr>
+            <tr><td class="p-2.5 font-bold border-r">31</td><td class="p-2.5 border-r">80 - 82</td><td class="p-2.5 border-r">64 - 70 kg</td><td class="p-2.5">100 cm</td></tr>
+            <tr><td class="p-2.5 font-bold border-r">32</td><td class="p-2.5 border-r">83 - 85</td><td class="p-2.5 border-r">71 - 77 kg</td><td class="p-2.5">102 cm</td></tr>
+            <tr><td class="p-2.5 font-bold border-r">34</td><td class="p-2.5 border-r">87 - 90</td><td class="p-2.5 border-r">78 - 86 kg</td><td class="p-2.5">104 cm</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mt-6 flex justify-end">
+        <button onclick="closeSizeGuideModal()" class="bg-black hover:bg-zinc-800 text-white text-xs font-bold px-5 py-2.5 rounded-lg transition-colors">
+          Đã hiểu
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Global Interaction Scripts -->
+  <script>
+    // Mobile Drawer Toggle
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const closeMobileMenuBtn = document.getElementById('close-mobile-menu-btn');
+    const mobileMenuDrawer = document.getElementById('mobile-menu-drawer');
+    const mobileMenuBackdrop = document.getElementById('mobile-menu-backdrop');
+    const mobileMenuPanel = document.getElementById('mobile-menu-panel');
+
+    function openMobileMenu() {
+      if (!mobileMenuDrawer) return;
+      mobileMenuDrawer.classList.remove('invisible');
+      setTimeout(() => {
+        mobileMenuBackdrop.classList.remove('opacity-0');
+        mobileMenuPanel.classList.remove('-translate-x-full');
+      }, 10);
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeMobileMenu() {
+      if (!mobileMenuDrawer) return;
+      mobileMenuBackdrop.classList.add('opacity-0');
+      mobileMenuPanel.classList.add('-translate-x-full');
+      setTimeout(() => {
+        mobileMenuDrawer.classList.add('invisible');
+        document.body.style.overflow = '';
+      }, 300);
+    }
+
+    if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', openMobileMenu);
+    if (closeMobileMenuBtn) closeMobileMenuBtn.addEventListener('click', closeMobileMenu);
+    if (mobileMenuBackdrop) mobileMenuBackdrop.addEventListener('click', closeMobileMenu);
+
+    // Size Guide Modal
+    const sizeGuideModal = document.getElementById('sizeGuideModal');
+    function openSizeGuideModal() {
+      if (!sizeGuideModal) return;
+      sizeGuideModal.classList.remove('pointer-events-none', 'opacity-0');
+      sizeGuideModal.firstElementChild.classList.remove('scale-95');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeSizeGuideModal() {
+      if (!sizeGuideModal) return;
+      sizeGuideModal.classList.add('pointer-events-none', 'opacity-0');
+      sizeGuideModal.firstElementChild.classList.add('scale-95');
+      document.body.style.overflow = '';
+    }
+    if (sizeGuideModal) {
+      sizeGuideModal.addEventListener('click', function(e) {
+        if (e.target === sizeGuideModal) closeSizeGuideModal();
+      });
+    }
+  </script>
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>
